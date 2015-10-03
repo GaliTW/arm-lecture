@@ -9,35 +9,25 @@
 	.type fibonacci, function
 
 fibonacci:
-	@ ADD/MODIFY CODE BELOW
-	@ PROLOG
-	push {r3, r4, r5, lr}
+	@ r0(rst), r4(pre), r5(i), r6(sum)
+	push {r4, r5, r6, lr}		@ PROLOG
 
-	@ R4 = R0 - 0 (update flags)
-	@ if(R0 <= 0) goto .L3 (which returns 0)
+	mov r5, r0			@ r5 = x 
+	mov r4, #1			@ pre = 1
+	mov r0, #0			@ rst = 0
 
-	@ Compare R4 wtih 1
-	@ If R4 == 1 goto .L4 (which returns 1)
+.loop:
+	subs r5, r5, #1
+	blt .end			@ if ( i < 0 ) goto .end, return rst
 
-	@ R0 = R4 - 1
-	@ Recursive call to fibonacci with R4 - 1 as parameter
+	add r6, r4, r0			@ sum = rst + pre
+	mov r4, r0			@ pre = rst
+	mov r0, r6			@ rst = sum
 
-	@ R5 = R0
-	@ R0 = R4 - 2
-	@ Recursive call to fibonacci with R4 - 2 as parameter
+	b .loop
 
-	@ R0 = R5 + R0 (update flags)
-
-	pop {r3, r4, r5, pc}		@EPILOG
-
-	@ END CODE MODIFICATION
-.L3:
-	mov r0, #0			@ R0 = 0
-	pop {r3, r4, r5, pc}		@ EPILOG
-
-.L4:
-	mov r0, #1			@ R0 = 1
-	pop {r3, r4, r5, pc}		@ EPILOG
+.end:
+	pop {r4, r5, r6, pc}		@ EPILOG
 
 	.size fibonacci, .-fibonacci
 	.end
